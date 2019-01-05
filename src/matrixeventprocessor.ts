@@ -43,7 +43,7 @@ export class MatrixEventProcessor {
     }
 
     public StateEventToMessage(event: any, channel: Discord.TextChannel): string {
-        const SUPPORTED_EVENTS = ["m.room.member", "m.room.name", "m.room.topic"];
+        /*const SUPPORTED_EVENTS = ["m.room.member", "m.room.name", "m.room.topic"];
         if (!SUPPORTED_EVENTS.includes(event.type)) {
             log.verbose(`${event.event_id} ${event.type} is not displayable.`);
             return;
@@ -77,7 +77,8 @@ export class MatrixEventProcessor {
         }
 
         msg += " on Matrix.";
-        return msg;
+        return msg;*/
+	return;
     }
 
     public async EventToEmbed(
