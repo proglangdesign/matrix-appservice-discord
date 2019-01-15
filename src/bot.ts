@@ -596,7 +596,7 @@ export class DiscordBot {
   }
 
   private async OnMessageUpdate(oldMsg: Discord.Message, newMsg: Discord.Message) {
-    // Check if an edit was actually made
+    /*// Check if an edit was actually made
     if (oldMsg.content === newMsg.content) {
       return;
     }
@@ -607,7 +607,8 @@ export class DiscordBot {
     // Send the message to all bridged matrix rooms
     if (!await this.SendMatrixMessage(editedMsg, newMsg.channel, newMsg.guild, newMsg.author, newMsg.id)) {
       log.error("Unable to announce message edit for msg id:", newMsg.id);
-    }
+    }*/
+    return;
   }
 
   private async DeleteDiscordMessage(msg: Discord.Message) {
