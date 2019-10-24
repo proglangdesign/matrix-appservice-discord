@@ -185,64 +185,7 @@ export class MatrixEventProcessor {
     }
 
     public async ProcessStateEvent(event: IMatrixEvent) {
-        log.verbose(`Got state event from ${event.room_id} ${event.type}`);
-        const channel = await this.discord.GetChannelFromRoomId(event.room_id) as Discord.TextChannel;
-
-        const SUPPORTED_EVENTS = ["m.room.member", "m.room.name", "m.room.topic"];
-        if (!SUPPORTED_EVENTS.includes(event.type)) {
-            log.verbose(`${event.event_id} ${event.type} is not displayable.`);
-            return;
-        }
-
-        if (event.sender === this.bridge.getIntent().getClient().getUserId()) {
-            log.verbose(`${event.event_id} ${event.type} is by our bot user, ignoring.`);
-            return;
-        }
-
-        let msg = `\`${event.sender}\` `;
-
-        const allowJoinLeave = !this.config.bridge.disableJoinLeaveNotifications;
-
-        if (event.type === "m.room.name") {
-            msg += `set the name to \`${event.content!.name}\``;
-        } else if (event.type === "m.room.topic") {
-            msg += `set the topic to \`${event.content!.topic}\``;
-        } else if (event.type === "m.room.member") {
-            const membership = event.content!.membership;
-            const intent = this.bridge.getIntent();
-            const isNewJoin = event.unsigned.replaces_state === undefined ? true : (
-                await intent.getEvent(event.room_id, event.unsigned.replaces_state)).content.membership !== "join";
-            if (membership === "join") {
-                this.mxUserProfileCache.delete(`${event.room_id}:${event.sender}`);
-                this.mxUserProfileCache.delete(event.sender);
-                if (event.content!.displayname) {
-                    this.mxUserProfileCache.set(`${event.room_id}:${event.sender}`, {
-                        avatar_url: event.content!.avatar_url,
-                        displayname: event.content!.displayname!,
-                    });
-                }
-                // We don't know if the user also updated their profile, but to be safe..
-                this.mxUserProfileCache.delete(event.sender);
-            }
-            if (membership === "join" && isNewJoin && allowJoinLeave) {
-                msg += "joined the room";
-            } else if (membership === "invite") {
-                msg += `invited \`${event.state_key}\` to the room`;
-            } else if (membership === "leave" && event.state_key !== event.sender) {
-                msg += `kicked \`${event.state_key}\` from the room`;
-            } else if (membership === "leave" && allowJoinLeave) {
-                msg += "left the room";
-            } else if (membership === "ban") {
-                msg += `banned \`${event.state_key}\` from the room`;
-            } else {
-                // Ignore anything else
-                return;
-            }
-        }
-
-        msg += " on Matrix.";
-        await this.discord.sendAsBot(msg, channel, event);
-        await this.sendReadReceipt(event);
+        return;
     }
 
     public async EventToEmbed(
