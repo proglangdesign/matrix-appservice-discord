@@ -64,41 +64,7 @@ export class MatrixEventProcessor {
     }
 
     public StateEventToMessage(event: IMatrixEvent, channel: Discord.TextChannel): string | undefined {
-        const SUPPORTED_EVENTS = ["m.room.member", "m.room.name", "m.room.topic"];
-        if (!SUPPORTED_EVENTS.includes(event.type)) {
-            log.verbose(`${event.event_id} ${event.type} is not displayable.`);
-            return;
-        }
-
-        if (event.sender === this.bridge.getIntent().getClient().getUserId()) {
-            log.verbose(`${event.event_id} ${event.type} is by our bot user, ignoring.`);
-            return;
-        }
-
-        let msg = `\`${event.sender}\` `;
-
-        if (event.type === "m.room.name") {
-            msg += `set the name to \`${event.content!.name}\``;
-        } else if (event.type === "m.room.topic") {
-            msg += `set the topic to \`${event.content!.topic}\``;
-        } else if (event.type === "m.room.member") {
-            const membership = event.content!.membership;
-            if (membership === "join"
-                && event.unsigned.prev_content === undefined) {
-                msg += `joined the room`;
-            } else if (membership === "invite") {
-                msg += `invited \`${event.state_key}\` to the room`;
-            } else if (membership === "leave" && event.state_key !== event.sender) {
-                msg += `kicked \`${event.state_key}\` from the room`;
-            } else if (membership === "leave") {
-                msg += `left the room`;
-            } else if (membership === "ban") {
-                msg += `banned \`${event.state_key}\` from the room`;
-            }
-        }
-
-        msg += " on Matrix.";
-        return msg;
+        return;
     }
 
     public async EventToEmbed(

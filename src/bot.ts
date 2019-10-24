@@ -832,56 +832,10 @@ export class DiscordBot {
     }
 
     private async OnMessageUpdate(oldMsg: Discord.Message, newMsg: Discord.Message) {
-        // Check if an edit was actually made
-        if (oldMsg.content === newMsg.content) {
-            return;
-        }
-        log.info(`Got edit event for ${newMsg.id}`);
-        let link = "";
-        const storeEvent = await this.store.Get(DbEvent, {discord_id: oldMsg.id});
-        if (storeEvent && storeEvent.Result) {
-            while (storeEvent.Next()) {
-                const matrixIds = storeEvent.MatrixId.split(";");
-                if (matrixIds[0] === this.lastEventIds[matrixIds[1]]) {
-                    log.info("Immediate edit, deleting and re-sending");
-                    await this.DeleteDiscordMessage(oldMsg);
-                    await this.OnMessage(newMsg);
-                    return;
-                }
-                link = `https://matrix.to/#/${matrixIds[1]}/${matrixIds[0]}`;
-            }
-        }
-
-        // Create a new edit message using the old and new message contents
-        const editedMsg = await this.discordMsgProcessor.FormatEdit(oldMsg, newMsg, link);
-
-        // Send the message to all bridged matrix rooms
-        if (!await this.SendMatrixMessage(editedMsg, newMsg.channel, newMsg.guild, newMsg.author, newMsg.id)) {
-            log.error("Unable to announce message edit for msg id:", newMsg.id);
-        }
+        return;
     }
 
     private async DeleteDiscordMessage(msg: Discord.Message) {
-        log.info(`Got delete event for ${msg.id}`);
-        const storeEvent = await this.store.Get(DbEvent, {discord_id: msg.id});
-        if (!storeEvent || !storeEvent.Result) {
-            log.warn(`Could not redact because the event was not in the store.`);
-            return;
-        }
-        while (storeEvent.Next()) {
-            log.info(`Deleting discord msg ${storeEvent.DiscordId}`);
-            const intent = this.GetIntentFromDiscordMember(msg.author, msg.webhookID);
-            const matrixIds = storeEvent.MatrixId.split(";");
-            try {
-                await intent.getClient().redactEvent(matrixIds[1], matrixIds[0]);
-            } catch (ex) {
-                log.warn(`Failed to delete ${storeEvent.DiscordId}, retrying as bot`);
-                try {
-                    await this.bridge.getIntent().getClient().redactEvent(matrixIds[1], matrixIds[0]);
-                } catch (ex) {
-                    log.warn(`Failed to delete ${storeEvent.DiscordId}, giving up`);
-                }
-            }
-        }
+        return;
     }
 }
